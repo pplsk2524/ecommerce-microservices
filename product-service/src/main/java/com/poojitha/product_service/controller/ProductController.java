@@ -1,5 +1,7 @@
 package com.poojitha.product_service.controller;
 
+import com.poojitha.product_service.dto.ProductRequest;
+import com.poojitha.product_service.dto.ProductResponse;
 import com.poojitha.product_service.entity.Product;
 import com.poojitha.product_service.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -19,26 +21,26 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return new ResponseEntity<>(productService.createProduct(product),HttpStatus.CREATED);
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+        return new ResponseEntity<>(productService.createProduct(request),HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<ProductResponse>> getAllProducts(){
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id){
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id){
         return new ResponseEntity<>(productService.getProductById(id),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-        return new ResponseEntity<>(productService.updateProduct(id,product),HttpStatus.OK);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request){
+        return new ResponseEntity<>(productService.updateProduct(id,request),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id){
-        return new ResponseEntity<>(productService.deleteProduct(id),HttpStatus.OK);
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
     }
 }
