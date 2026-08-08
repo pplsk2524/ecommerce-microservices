@@ -4,6 +4,7 @@ import com.poojitha.product_service.dto.ProductRequest;
 import com.poojitha.product_service.dto.ProductResponse;
 import com.poojitha.product_service.entity.Product;
 import com.poojitha.product_service.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid ProductRequest request) {
         return new ResponseEntity<>(productService.createProduct(request),HttpStatus.CREATED);
     }
     @GetMapping
@@ -35,7 +36,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request){
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequest request){
         return new ResponseEntity<>(productService.updateProduct(id,request),HttpStatus.OK);
     }
 
