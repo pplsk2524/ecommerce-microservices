@@ -17,10 +17,10 @@ public class OrderRequest {
     @NotNull
     private Long productId;
     @Min(value = 1, message = "quantity should be atleast 1")
-    @Max(value = 20, message = "quantity cannot exceed 20")
+    @Max(value = 10, message = "quantity cannot exceed 20")
     private Integer quantity;
-    @Positive
-    private Double totalPrice;
-    @NotNull(message = "Please enter valid status")
-    private String status;
+    //@Positive
+    //private Double totalPrice;
+//    @NotNull(message = "Please enter valid status")
+//    private String status;
 }

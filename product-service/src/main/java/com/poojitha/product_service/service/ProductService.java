@@ -3,6 +3,7 @@ package com.poojitha.product_service.service;
 import com.poojitha.product_service.dto.ProductRequest;
 import com.poojitha.product_service.dto.ProductResponse;
 import com.poojitha.product_service.entity.Product;
+import com.poojitha.product_service.exception.InsufficientStockException;
 import com.poojitha.product_service.exception.ProductNotFoundException;
 import com.poojitha.product_service.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
@@ -62,5 +63,15 @@ public class ProductService {
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id " + id));
         productRepository.delete(product);
+    }
+
+    public ProductResponse reduceStock(Long productId, Integer quantity){
+        Product product = productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Product not found with id " + productId));
+        if(product.getQuantity()<quantity){
+            throw new InsufficientStockException("Insufficient stock for product "+productId);
+        }
+        product.setQuantity(product.getQuantity()-quantity);
+        Product updatedProduct =productRepository.save(product);
+        return modelMapper.map(updatedProduct, ProductResponse.class);
     }
 }
