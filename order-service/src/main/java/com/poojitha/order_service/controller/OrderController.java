@@ -38,8 +38,13 @@ public class OrderController {
         return new ResponseEntity<>(orderService.updateOrder(orderId,orderRequest),HttpStatus.OK);
     }
 
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
-        return new ResponseEntity<>(orderService.deleteOrder(orderId),HttpStatus.OK);
+//    @DeleteMapping("/{orderId}")
+//    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
+//        return new ResponseEntity<>(orderService.deleteOrder(orderId),HttpStatus.OK);
+//    }
+
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable Long orderId) {
+        return new ResponseEntity<>(orderService.cancelOrder(orderId),HttpStatus.OK);
     }
 }

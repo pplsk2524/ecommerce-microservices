@@ -9,7 +9,6 @@ import com.poojitha.product_service.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -71,6 +70,14 @@ public class ProductService {
             throw new InsufficientStockException("Insufficient stock for product "+productId);
         }
         product.setQuantity(product.getQuantity()-quantity);
+        Product updatedProduct =productRepository.save(product);
+        return modelMapper.map(updatedProduct, ProductResponse.class);
+    }
+
+    public ProductResponse restoreStock(Long id, Integer quantity) {
+        Product product = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("Product not found with id " + id));
+        product.setQuantity(product.getQuantity()+quantity);
+
         Product updatedProduct =productRepository.save(product);
         return modelMapper.map(updatedProduct, ProductResponse.class);
     }

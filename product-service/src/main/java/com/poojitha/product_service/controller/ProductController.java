@@ -49,4 +49,9 @@ public class ProductController {
     public ResponseEntity<ProductResponse> reduceStock(@PathVariable Long id,@RequestParam Integer quantity){
         return new ResponseEntity<>(productService.reduceStock(id,quantity),HttpStatus.OK);
     }
+
+    @PutMapping("/{id}/restore-stock")
+    public ResponseEntity<ProductResponse> restoreStock(@PathVariable Long id,@RequestParam Integer quantity){
+        return new ResponseEntity<>(productService.restoreStock(id,quantity),HttpStatus.OK);
+    }
 }

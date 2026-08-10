@@ -19,5 +19,6 @@ public class Order {
     private Long productId;
     private Integer quantity;
     private Double totalPrice;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 }

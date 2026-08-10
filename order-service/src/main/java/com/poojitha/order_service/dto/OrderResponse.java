@@ -1,6 +1,7 @@
 package com.poojitha.order_service.dto;
 
 
+import com.poojitha.order_service.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +16,5 @@ public class OrderResponse {
     private Long productId;
     private Integer quantity;
     private Double totalPrice;
-    private String status;
+    private OrderStatus status;
 }
