@@ -58,17 +58,26 @@ public class OrderService {
         if(OrderStatus.CANCELLED.equals(order.getStatus())){
             throw new IllegalStateException("Cancelled order cannot be updated");
         }
-        ProductResponse product = productClient.getProductById(orderRequest.getProductId());
-        if (orderRequest.getQuantity() > product.getQuantity()) {
-            throw new InsufficientStockException("Insufficient stock for product "+orderRequest.getProductId());
+        if(!order.getProductId().equals(orderRequest.getProductId())){
+            throw new IllegalStateException("Product cannot be changed for an existing order");
         }
+        ProductResponse product = productClient.getProductById(orderRequest.getProductId());
+        int quantityDifference = orderRequest.getQuantity() - order.getQuantity();
         Double totalPrice = product.getPrice() * orderRequest.getQuantity();
+
+        if(quantityDifference>0){
+            if(quantityDifference>product.getQuantity()){
+                throw new InsufficientStockException("Insufficient stock for product "+orderRequest.getProductId());
+            }
+            productClient.reduceStock(orderRequest.getProductId(),quantityDifference);
+        }
+        else if(quantityDifference<0){
+            productClient.restoreStock(orderRequest.getProductId(),Math.abs(quantityDifference));
+        }
         order.setQuantity(orderRequest.getQuantity());
         //order.setStatus(orderRequest.getStatus());
-        order.setProductId(orderRequest.getProductId());
         order.setTotalPrice(totalPrice);
         orderRepository.save(order);
-        productClient.reduceStock(orderRequest.getProductId(),orderRequest.getQuantity());
         return modelMapper.map(order, OrderResponse.class);
     }
 

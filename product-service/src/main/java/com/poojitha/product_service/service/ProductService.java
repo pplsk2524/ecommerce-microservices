@@ -66,6 +66,8 @@ public class ProductService {
 
     public ProductResponse reduceStock(Long productId, Integer quantity){
         Product product = productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Product not found with id " + productId));
+        System.out.println("Product stock in Product Service: " + product.getQuantity());
+        System.out.println("Quantity requested from Order Service: " + quantity);
         if(product.getQuantity()<quantity){
             throw new InsufficientStockException("Insufficient stock for product "+productId);
         }
