@@ -10,6 +10,7 @@ import com.poojitha.order_service.exception.InsufficientStockException;
 import com.poojitha.order_service.exception.OrderNotFoundException;
 import com.poojitha.order_service.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -55,8 +56,8 @@ public class OrderService {
 
     public OrderResponse updateOrder(Long orderId, OrderRequest orderRequest) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Order not found with id "+orderId));
-        if(OrderStatus.CANCELLED.equals(order.getStatus())){
-            throw new IllegalStateException("Cancelled order cannot be updated");
+        if(OrderStatus.CANCELLED.equals(order.getStatus()) || OrderStatus.SHIPPED.equals(order.getStatus()) || OrderStatus.DELIVERED.equals(order.getStatus())){
+            throw new IllegalStateException("Shipped, Delivered or Cancelled orders cannot be updated");
         }
         if(!order.getProductId().equals(orderRequest.getProductId())){
             throw new IllegalStateException("Product cannot be changed for an existing order");
@@ -93,9 +94,52 @@ public class OrderService {
         if(OrderStatus.CANCELLED.equals(order.getStatus())){
             throw new IllegalStateException("Order is already cancelled");
         }
+        if(OrderStatus.SHIPPED.equals(order.getStatus()) ||  OrderStatus.DELIVERED.equals(order.getStatus())){
+            throw new IllegalStateException("Shipped or delivered orders cannot be cancelled");
+        }
         order.setStatus(OrderStatus.CANCELLED);
         Order updatedOrder=orderRepository.save(order);
         productClient.restoreStock(order.getProductId(),order.getQuantity());
         return modelMapper.map(updatedOrder, OrderResponse.class);
+    }
+
+    public OrderResponse confirmOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Order not found with id "+orderId));
+        if(OrderStatus.PLACED.equals(order.getStatus())){
+            order.setStatus(OrderStatus.CONFIRMED);
+        }
+        else{
+            throw new IllegalStateException("Only placed orders can be confirmed");
+        }
+        Order updatedOrder=orderRepository.save(order);
+        return modelMapper.map(updatedOrder, OrderResponse.class);
+    }
+
+    public OrderResponse shipOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Order not found with id "+orderId));
+        if(OrderStatus.CONFIRMED.equals(order.getStatus())){
+            order.setStatus(OrderStatus.SHIPPED);
+        }
+        else{
+            throw new IllegalStateException("Only confirmed orders can be shipped");
+        }
+        Order updatedOrder=orderRepository.save(order);
+        return modelMapper.map(updatedOrder, OrderResponse.class);
+    }
+
+    public OrderResponse deliverOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Order not found with id "+orderId));
+        if(OrderStatus.SHIPPED.equals(order.getStatus())){
+            order.setStatus(OrderStatus.DELIVERED);
+        }
+        else{
+            throw new IllegalStateException("Only shipped orders can be delivered");
+        }
+        Order updatedOrder=orderRepository.save(order);
+        return modelMapper.map(updatedOrder, OrderResponse.class);
+    }
+
+    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatus(status).stream().map(order-> modelMapper.map(order,OrderResponse.class)).toList();
     }
 }
