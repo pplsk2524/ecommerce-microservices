@@ -5,6 +5,7 @@ import com.poojitha.order_service.dto.OrderResponse;
 import com.poojitha.order_service.entity.OrderStatus;
 import com.poojitha.order_service.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,13 @@ public class OrderController {
         return new ResponseEntity<>(orderService.createOrder(orderRequest),HttpStatus.CREATED);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+//        return new ResponseEntity<>(orderService.getAllOrders(),HttpStatus.OK);
+//    }
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
-        return new ResponseEntity<>(orderService.getAllOrders(),HttpStatus.OK);
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
+        return new ResponseEntity<>( orderService.getAllOrders(page,size),HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}")
@@ -34,10 +39,16 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getOrderById(orderId),HttpStatus.OK);
     }
 
+//    @GetMapping("/status/{status}")
+//    public ResponseEntity<List<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status) {
+//        return new ResponseEntity<>(orderService.getOrdersByStatus(status),HttpStatus.OK);
+//    }
+
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status) {
-        return new ResponseEntity<>(orderService.getOrdersByStatus(status),HttpStatus.OK);
+    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size) {
+        return new ResponseEntity<>(orderService.getOrdersByStatus(status,page,size),HttpStatus.OK);
     }
+
     @PutMapping("/{orderId}")
     public ResponseEntity<OrderResponse> updateOrder(@PathVariable Long orderId,@Valid @RequestBody OrderRequest orderRequest) {
         return new ResponseEntity<>(orderService.updateOrder(orderId,orderRequest),HttpStatus.OK);

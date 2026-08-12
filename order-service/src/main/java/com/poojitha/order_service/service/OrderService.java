@@ -10,6 +10,9 @@ import com.poojitha.order_service.exception.InsufficientStockException;
 import com.poojitha.order_service.exception.OrderNotFoundException;
 import com.poojitha.order_service.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +45,16 @@ public class OrderService {
         return modelMapper.map(savedOrder, OrderResponse.class);
     }
 
-    public List<OrderResponse> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        List<OrderResponse> orderResponseList = new ArrayList<>();
-        orders.forEach(order -> orderResponseList.add(modelMapper.map(order, OrderResponse.class)));
-        return orderResponseList;
+//    public List<OrderResponse> getAllOrders() {
+//        List<Order> orders = orderRepository.findAll();
+//        List<OrderResponse> orderResponseList = new ArrayList<>();
+//        orders.forEach(order -> orderResponseList.add(modelMapper.map(order, OrderResponse.class)));
+//        return orderResponseList;
+//    }
+
+    public Page<OrderResponse> getAllOrders(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findAll(pageable).map(order -> modelMapper.map(order, OrderResponse.class));
     }
 
     public OrderResponse getOrderById(Long orderId) {
@@ -139,7 +147,12 @@ public class OrderService {
         return modelMapper.map(updatedOrder, OrderResponse.class);
     }
 
-    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
-        return orderRepository.findByStatus(status).stream().map(order-> modelMapper.map(order,OrderResponse.class)).toList();
+//    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
+//        return orderRepository.findByStatus(status).stream().map(order-> modelMapper.map(order,OrderResponse.class)).toList();
+//    }
+
+    public Page<OrderResponse> getOrdersByStatus(OrderStatus status,int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return orderRepository.findByStatus(status,pageable).map(order-> modelMapper.map(order,OrderResponse.class));
     }
 }
