@@ -5,13 +5,17 @@ import com.poojitha.order_service.dto.OrderResponse;
 import com.poojitha.order_service.entity.OrderStatus;
 import com.poojitha.order_service.service.OrderService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -30,7 +34,7 @@ public class OrderController {
 //        return new ResponseEntity<>(orderService.getAllOrders(),HttpStatus.OK);
 //    }
     @GetMapping
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
+    public ResponseEntity<Page<OrderResponse>> getAllOrders( @RequestParam(defaultValue = "0") @Min(0) int page, @RequestParam(defaultValue = "5") @Min(1) @Max(100) int size){
         return new ResponseEntity<>( orderService.getAllOrders(page,size),HttpStatus.OK);
     }
 
@@ -45,7 +49,7 @@ public class OrderController {
 //    }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(@PathVariable OrderStatus status, @RequestParam(defaultValue = "0") @Min(0) int page, @RequestParam(defaultValue = "5") @Min(1) @Max(100) int size) {
         return new ResponseEntity<>(orderService.getOrdersByStatus(status,page,size),HttpStatus.OK);
     }
 
